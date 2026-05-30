@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import StatsSection from "./components/StatsSection";
 import FilterSection from "./components/FilterSection";
@@ -8,6 +7,9 @@ import TodoFeed from "./components/TodoFeed";
 import TodoDetails from "./TodoDetails";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import NewTodoModal from "./components/NewTodoModal";
+import AddTodoButton from "./components/AddTodoButton";
+import axios from "axios";
 
 const API_URL = "http://localhost:5000/api";
 const PAGE_SIZE = 8;
@@ -24,6 +26,7 @@ const INITIAL_FILTERS = {
 
 export default function App() {
   const [activeTodoId, setActiveTodoId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
@@ -97,19 +100,53 @@ export default function App() {
     };
   };
 
-  // Connects directly to backend API loop
+  // 1. GET ALL
+  const fetchTodos = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/todos`);
+      setTodos(response.data);
+    } catch (err) {
+      console.error("Error fetching todos:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 2. POST (Create)
+  const createTodo = async (newTodoData) => {
+    try {
+      await axios.post(`${API_URL}/todos`, newTodoData);
+      fetchTodos(); // Refresh the list after adding
+    } catch (err) {
+      console.error("Error creating todo:", err.message);
+    }
+  };
+
+  // 3. PUT (Update)
+  const updateTodo = async (id, updatedData) => {
+    try {
+      await axios.put(`${API_URL}/todos/${id}`, updatedData);
+      fetchTodos(); // Refresh the list after updating
+    } catch (err) {
+      console.error("Error updating todo:", err.message);
+    }
+  };
+
+  // 4. DELETE (Remove)
+  const deleteTodo = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/todos/${id}`);
+      fetchTodos(); // Refresh the list after deleting
+
+      // If we delete the task we are currently viewing, go back to dashboard
+      if (activeTodoId === id) setActiveTodoId(null);
+    } catch (err) {
+      console.error("Error deleting todo:", err.message);
+    }
+  };
+
   useEffect(() => {
-    fetch(`${API_URL}/todos`)
-      .then((res) => {
-        if (!res.ok)
-          throw new Error("Could not connect to Express backend service.");
-        return res.json();
-      })
-      .then((data) => {
-        setTodos(data);
-        setLoading(false);
-      })
-      .catch((err) => console.error(err.message));
+    fetchTodos();
   }, []);
 
   const filteredTodos = todos.filter((todo) => {
@@ -230,6 +267,15 @@ export default function App() {
       </main>
       {/*  */}
       <Footer />
+      <AddTodoButton onClick={() => setIsModalOpen(true)} />
+      {/*  */}
+      {isModalOpen && (
+        <NewTodoModal
+          lookup={lookup}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={createTodo}
+        />
+      )}
     </div>
   );
 }
