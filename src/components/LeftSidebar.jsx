@@ -16,7 +16,7 @@ export default function LeftSidebar({
   };
 
   return (
-    <aside class="space-y-4 lg:col-span-1">
+    <aside className="space-y-4 lg:col-span-1">
       <FilterGroup
         title="Status 🚦"
         items={lookup.statuses}

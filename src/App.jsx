@@ -85,9 +85,9 @@ export default function App() {
   );
 
   return (
-    <div class="min-h-screen animated-page-bg text-slate-900">
+    <div className="min-h-screen animated-page-bg text-slate-900">
       <Header />
-      <main class="mx-auto max-w-9xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-9xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <StatsSection stats={statsCards} />
         <FilterSection
           filters={filters}
@@ -95,7 +95,7 @@ export default function App() {
           lookup={lookup}
           onReset={() => setFilters(INITIAL_FILTERS)}
         />
-        <section class="grid gap-6 lg:grid-cols-4">
+        <section className="grid gap-6 lg:grid-cols-4">
           <LeftSidebar
             lookup={lookup}
             filters={filters}

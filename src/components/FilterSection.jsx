@@ -13,9 +13,9 @@ export default function FilterSection({
   };
 
   return (
-    <section id="filters" class="rounded-xl bg-white p-4 shadow-sm">
+    <section id="filters" className="rounded-xl bg-white p-4 shadow-sm">
       <FilterHeader onReset={onReset} />
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <FilterInput
           label="Search"
           value={filters.search}

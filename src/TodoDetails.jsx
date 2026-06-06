@@ -30,7 +30,7 @@ export default function TodoDetails({ todoId, onGoBack }) {
 
   if (!todo)
     return (
-      <div class="text-center p-12 text-slate-500 font-semibold">
+      <div className="text-center p-12 text-slate-500 font-semibold">
         Compiling multi-table layout data streams...
       </div>
     );
@@ -40,18 +40,18 @@ export default function TodoDetails({ todoId, onGoBack }) {
   const cleanDate = todo.due_date ? todo.due_date.substring(0, 10) : "-";
 
   return (
-    <div class="min-h-screen animated-page-bg text-slate-900">
+    <div className="min-h-screen animated-page-bg text-slate-900">
       <Header />
 
-      <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div id="todoDetails">
-          <article class="rounded-xl bg-white p-6 shadow-sm">
+          <article className="rounded-xl bg-white p-6 shadow-sm">
             <TodoHeader todo={todo} status={status} priority={priority} />
 
             <TodoMetaData todo={todo} cleanDate={cleanDate} />
             <TodoTags todo={todo} />
 
-            <section class="mt-6 grid gap-6 sm:grid-cols-2">
+            <section className="mt-6 grid gap-6 sm:grid-cols-2">
               <DetailList
                 title="Subtasks"
                 items={todo.subtasks}
@@ -80,7 +80,7 @@ export default function TodoDetails({ todoId, onGoBack }) {
               />
             </section>
 
-            <section class="mt-6 grid gap-6 sm:grid-cols-2">
+            <section className="mt-6 grid gap-6 sm:grid-cols-2">
               <DetailList
                 title="Comments"
                 items={todo.comments}

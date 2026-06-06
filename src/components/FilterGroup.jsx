@@ -11,8 +11,8 @@ export default function FilterGroup({
 }) {
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm">
-      <h2 class="mb-3 text-xl font-semibold">{title}</h2>
-      <div id="statusesList" class="flex flex-wrap gap-2">
+      <h2 className="mb-3 text-xl font-semibold">{title}</h2>
+      <div id="statusesList" className="flex flex-wrap gap-2">
         {items.map((item) => {
           const id = item[idKey];
           const label = item[labelKey];

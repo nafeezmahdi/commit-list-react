@@ -11,7 +11,8 @@ export function useTodos() {
     try {
       setLoading(true);
       const response = await axios.get(`${API_URL}/todos`);
-      setTodos(response.data);
+      // console.log("Fetched todos:", response.data);
+      setTodos(response.data.data);
     } catch (err) {
       console.error("Error fetching todos:", err.message);
     } finally {
@@ -21,7 +22,7 @@ export function useTodos() {
 
   const addTodo = async (todoData) => {
     try {
-      await axios.post(`${API_URL}/todos`, todoData);
+      await axios.post(`${API_URL}/add-todo`, todoData);
       fetchTodos();
     } catch (err) {
       console.error("Error creating todo:", err.message);

@@ -15,7 +15,7 @@ export default function TodoMetaData({ todo, cleanDate }) {
   //    ? todo.recurring_settings.repeat_type
   //    : "No"}
 
-  <div class="mt-6 grid gap-3 text-sm sm:grid-cols-2">
+  <div className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
     <MetaRow label="Assignee ID" value={`User #${todo.user_id}`} />
     <MetaRow label="Category" value={todo.category_name ?? "-"} />
     <MetaRow label="Due Date" value={cleanDate} />

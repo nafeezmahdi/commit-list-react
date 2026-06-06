@@ -31,16 +31,16 @@ export default function TodoFeed({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="M9 11l3 3L22 4"
             />
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
             />
           </svg>
@@ -55,7 +55,7 @@ export default function TodoFeed({
           ) : (
             pageItems.map((todo, i) => (
               <TodoCard
-                key={todo.todo_id}
+                key={todo._id}
                 todo={todo}
                 index={i}
                 usersById={usersById}
