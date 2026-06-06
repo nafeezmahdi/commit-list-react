@@ -7,7 +7,8 @@ import TodoTags from "./components/TodoTags";
 import TodoMetaData from "./components/TodoMetaData";
 import DetailList from "./components/DetailList";
 
-const API_URL = "http://localhost:5000/api";
+// const API_URL = "http://localhost:5000/api";
+const API_URL = "https://commit-list-backend-mongo.vercel.app/api";
 
 export default function TodoDetails({ todoId, onGoBack }) {
   const [todo, setTodo] = useState(null);

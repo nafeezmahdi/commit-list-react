@@ -38,7 +38,7 @@ export default function App() {
   const [filters, setFilters] = useState(INITIAL_FILTERS);
 
   // Custom Hook replaces all the API/State logic
-  const { todos, loading, createTodo } = useTodos();
+  const { todos, loading, addTodo } = useTodos();
 
   // This fallback mock generator helper mimics lengths safely when hitting the general /todos list endpoint
   const getTodoRelated = () => {
@@ -137,7 +137,7 @@ export default function App() {
         <NewTodoModal
           lookup={lookup}
           onClose={() => setIsModalOpen(false)}
-          onSuccess={createTodo}
+          onSuccess={addTodo}
         />
       )}
     </div>

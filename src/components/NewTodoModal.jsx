@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function NewTodoModal({ onClose, onSuccess, lookup }) {
+export default function NewTodoModal({ lookup, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -21,29 +21,15 @@ export default function NewTodoModal({ onClose, onSuccess, lookup }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/todos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Convert string IDs to numbers for the SQL backend
-        body: JSON.stringify({
-          ...formData,
-          user_id: formData.user_id ? Number(formData.user_id) : null,
-          category_id: formData.category_id
-            ? Number(formData.category_id)
-            : null,
-          status_id: formData.status_id ? Number(formData.status_id) : null,
-          priority_id: formData.priority_id
-            ? Number(formData.priority_id)
-            : null,
-        }),
-      });
+      // onSuccess is actually your `addTodo` function from useTodos.js!
+      // We pass the raw formData to it, and useTodos handles the translation and the API call.
+      await onSuccess(formData);
 
-      if (!response.ok) throw new Error("Failed to create todo");
-
-      onSuccess(); // Triggers a re-fetch in App.jsx
-      onClose(); // Closes the modal
+      onClose(); // Closes the modal after successful save
     } catch (error) {
-      alert(error.message);
+      alert("Failed to create task");
+      console.error(error);
+    } finally {
       setLoading(false);
     }
   };

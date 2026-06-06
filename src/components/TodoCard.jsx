@@ -5,15 +5,20 @@ export default function TodoCard({
   categoriesById,
   statusesById,
   prioritiesById,
-  getTodoRelated,
   statusClass,
   priorityClass,
+  getTodoRelated,
   onCardClick,
 }) {
-  const user = usersById[todo._id];
+  // 1. Look up the exact User and Category objects using the IDs from our Translator
+  const user = usersById[todo.user_id];
   const category = categoriesById[todo.category_id];
-  const status = statusesById[todo.status_id]?.status;
-  const priority = prioritiesById[todo.priority_id]?.level;
+
+  // 2. Look up the exact Status and Priority strings
+  const status = statusesById[todo.status_id]?.status || "Pending";
+  const priority = prioritiesById[todo.priority_id]?.level || "Medium";
+
+  // 3. Safely get related items (subtasks, tags, etc.) using the safe todo_id
   const related = getTodoRelated(todo.todo_id);
   const completeSubtasks = related.subtasks.filter(
     (s) => s.is_completed,
@@ -37,6 +42,7 @@ export default function TodoCard({
           </h3>
           <p className="text-sm text-slate-600">{todo.description}</p>
         </div>
+
         <div className="flex gap-2">
           <span
             className={`rounded-full px-3 py-1.5 text-sm font-semibold ${statusClass[status]}`}
