@@ -15,14 +15,37 @@ export default function TodoDetails({ todoId, onGoBack }) {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Hits the relational database getter endpoint on your running server instance
     fetch(`${API_URL}/todos/${todoId}`)
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data) => setTodo(data))
-      .catch(() => setError(true));
+      .then((res) => {
+        const rawTodo = res.data || res;
+
+        // THE FIX: We force missing arrays to be empty arrays [] so React doesn't crash!
+        const adaptedTodo = {
+          ...rawTodo,
+          // Protect single items
+          status_name: rawTodo.status_name || rawTodo.status || "Pending",
+          priority_level:
+            rawTodo.priority_level || rawTodo.priority || "Medium",
+
+          // Protect lists (If missing, default to [])
+          subtasks: rawTodo.subtasks || [],
+          reminders: rawTodo.reminders || [],
+          comments: rawTodo.comments || [],
+          attachments: rawTodo.attachments || [],
+          tags: rawTodo.tags || [],
+          sharedUsers: rawTodo.sharedUsers || [],
+        };
+
+        setTodo(adaptedTodo);
+      })
+      .catch((err) => {
+        console.error("Error fetching details:", err);
+        setError(true);
+      });
   }, [todoId]);
 
   if (error) {
