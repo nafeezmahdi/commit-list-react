@@ -18,6 +18,8 @@ export default function TodoFeed({
   statusClass,
   priorityClass,
   onCardClick,
+  onEdit,
+  onDelete,
 }) {
   const showingFrom = total === 0 ? 0 : start + 1;
   const showingTo = Math.min(start + pageSize, total);
@@ -71,6 +73,8 @@ export default function TodoFeed({
                 statusClass={statusClass}
                 priorityClass={priorityClass}
                 onCardClick={onCardClick}
+                onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))
           )}

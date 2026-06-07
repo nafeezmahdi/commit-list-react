@@ -9,51 +9,107 @@ export default function TodoCard({
   priorityClass,
   getTodoRelated,
   onCardClick,
+  onEdit,
+  onDelete,
 }) {
-  // 1. Look up the exact User and Category objects using the IDs from our Translator
   const user = usersById[todo.user_id];
   const category = categoriesById[todo.category_id];
-
-  // 2. Look up the exact Status and Priority strings
   const status = statusesById[todo.status_id]?.status || "Pending";
   const priority = prioritiesById[todo.priority_id]?.level || "Medium";
-
-  // 3. Safely get related items (subtasks, tags, etc.) using the safe todo_id
   const related = getTodoRelated(todo.todo_id);
   const completeSubtasks = related.subtasks.filter(
     (s) => s.is_completed,
   ).length;
 
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (window.confirm(`Delete "${todo.title}"?`)) {
+      onDelete(todo._id);
+    }
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    onEdit(todo);
+  };
+
   return (
     <article
       key={todo._id}
       style={{ animationDelay: `${index * 70}ms` }}
-      className="todo-card-animate rounded-lg border border-slate-200 p-4 transition-shadow hover:shadow-md bg-white"
+      className="todo-card-animate group rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all duration-300 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <h3 className="text-lg font-semibold">
             <button
               onClick={() => onCardClick(todo._id)}
-              className="text-indigo-700 hover:underline text-left font-semibold"
+              className="text-left font-semibold text-indigo-700 transition-colors hover:text-indigo-900 hover:underline"
             >
               {todo.title}
             </button>
           </h3>
-          <p className="text-sm text-slate-600">{todo.description}</p>
+          <p className="mt-0.5 text-sm text-slate-600 line-clamp-2">
+            {todo.description}
+          </p>
         </div>
 
-        <div className="flex gap-2">
-          <span
-            className={`rounded-full px-3 py-1.5 text-sm font-semibold ${statusClass[status]}`}
-          >
-            {status}
-          </span>
-          <span
-            className={`rounded-full px-3 py-1.5 text-sm font-semibold ${priorityClass[priority]}`}
-          >
-            {priority}
-          </span>
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1.5 opacity-80 transition-opacity group-hover:opacity-100">
+            <button
+              onClick={handleEdit}
+              title="Edit todo"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={handleDelete}
+              title="Delete todo"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 transition-all hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className="flex gap-2">
+            <span
+              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${statusClass[status]}`}
+            >
+              {status}
+            </span>
+            <span
+              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${priorityClass[priority]}`}
+            >
+              {priority}
+            </span>
+          </div>
         </div>
       </div>
 

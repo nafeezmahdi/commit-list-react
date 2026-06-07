@@ -86,7 +86,7 @@ export function useTodos() {
         status: findWord(statusesById, "status", updatedData.status_id),
         priority: findWord(prioritiesById, "level", updatedData.priority_id),
       };
-      await axios.put(`${API_URL}/todos/${todoId}`, backendData);
+      await axios.put(`${API_URL}/update-todo/${todoId}`, backendData);
       fetchTodos();
     } catch (err) {
       console.error("Error updating todo:", err.message);
@@ -95,7 +95,7 @@ export function useTodos() {
 
   const deleteTodo = async (todoId) => {
     try {
-      await axios.delete(`${API_URL}/todos/${todoId}`);
+      await axios.delete(`${API_URL}/delete-todo/${todoId}`);
       fetchTodos();
     } catch (err) {
       console.error("Error deleting todo:", err.message);

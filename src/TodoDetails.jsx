@@ -54,8 +54,12 @@ export default function TodoDetails({ todoId, onGoBack }) {
 
   if (!todo)
     return (
-      <div className="text-center p-12 text-slate-500 font-semibold">
-        Compiling multi-table layout data streams...
+      <div className="page-layout animated-page-bg text-slate-900">
+        <Header />
+        <main className="flex flex-1 items-center justify-center p-12 text-center font-semibold text-slate-500">
+          Compiling multi-table layout data streams...
+        </main>
+        <Footer />
       </div>
     );
 
@@ -64,10 +68,31 @@ export default function TodoDetails({ todoId, onGoBack }) {
   const cleanDate = todo.due_date ? todo.due_date.substring(0, 10) : "-";
 
   return (
-    <div className="min-h-screen animated-page-bg text-slate-900">
+    <div className="page-layout animated-page-bg text-slate-900">
       <Header />
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <button
+          onClick={onGoBack}
+          className="mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back to Dashboard
+        </button>
+
         <div id="todoDetails">
           <article className="rounded-xl bg-white p-6 shadow-sm">
             <TodoHeader todo={todo} status={status} priority={priority} />

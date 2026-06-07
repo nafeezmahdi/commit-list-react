@@ -35,10 +35,18 @@ const INITIAL_FILTERS = {
 export default function App() {
   const [activeTodoId, setActiveTodoId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState(null);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
 
-  // Custom Hook replaces all the API/State logic
-  const { todos, loading, addTodo } = useTodos();
+  const { todos, loading, addTodo, updateTodo, deleteTodo } = useTodos();
+
+  const handleModalSuccess = async (formData, todoId) => {
+    if (todoId) {
+      await updateTodo(todoId, formData);
+    } else {
+      await addTodo(formData);
+    }
+  };
 
   // This fallback mock generator helper mimics lengths safely when hitting the general /todos list endpoint
   const getTodoRelated = () => {
@@ -55,8 +63,12 @@ export default function App() {
 
   if (loading)
     return (
-      <div className="text-center p-12 text-slate-500 font-semibold">
-        Loading Board Engine Contexts from Backend...
+      <div className="page-layout animated-page-bg text-slate-900">
+        <Header />
+        <main className="flex flex-1 items-center justify-center p-12 text-center font-semibold text-slate-500">
+          Loading Board Engine Contexts from Backend...
+        </main>
+        <Footer />
       </div>
     );
 
@@ -85,9 +97,9 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen animated-page-bg text-slate-900">
+    <div className="page-layout animated-page-bg text-slate-900">
       <Header />
-      <main className="mx-auto max-w-9xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-9xl flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <StatsSection stats={statsCards} />
         <FilterSection
           filters={filters}
@@ -120,6 +132,8 @@ export default function App() {
             statusClass={statusClass}
             priorityClass={priorityClass}
             onCardClick={(id) => setActiveTodoId(id)}
+            onEdit={(todo) => setEditingTodo(todo)}
+            onDelete={deleteTodo}
           />
 
           <RightSidebar
@@ -137,7 +151,15 @@ export default function App() {
         <NewTodoModal
           lookup={lookup}
           onClose={() => setIsModalOpen(false)}
-          onSuccess={addTodo}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+      {editingTodo && (
+        <NewTodoModal
+          lookup={lookup}
+          todo={editingTodo}
+          onClose={() => setEditingTodo(null)}
+          onSuccess={handleModalSuccess}
         />
       )}
     </div>

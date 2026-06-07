@@ -1,15 +1,27 @@
 import { useState } from "react";
 
-export default function NewTodoModal({ lookup, onClose, onSuccess }) {
+const inputClass =
+  "w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-800 transition-all placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20";
+
+const labelClass =
+  "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500";
+
+export default function NewTodoModal({
+  lookup,
+  onClose,
+  onSuccess,
+  todo = null,
+}) {
+  const isEdit = Boolean(todo);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    user_id: "",
-    category_id: "",
-    status_id: "1", // Default to Pending
-    priority_id: "2", // Default to Medium
-    due_date: "",
+    title: todo?.title || "",
+    description: todo?.description || "",
+    user_id: todo?.user_id || "",
+    category_id: todo?.category_id || "",
+    status_id: todo?.status_id || "1",
+    priority_id: todo?.priority_id || "2",
+    due_date: todo?.due_date ? todo.due_date.substring(0, 10) : "",
   });
 
   const handleChange = (e) => {
@@ -21,13 +33,10 @@ export default function NewTodoModal({ lookup, onClose, onSuccess }) {
     setLoading(true);
 
     try {
-      // onSuccess is actually your `addTodo` function from useTodos.js!
-      // We pass the raw formData to it, and useTodos handles the translation and the API call.
-      await onSuccess(formData);
-
-      onClose(); // Closes the modal after successful save
+      await onSuccess(formData, todo?._id);
+      onClose();
     } catch (error) {
-      alert("Failed to create task");
+      alert(`Failed to ${isEdit ? "update" : "create"} task`);
       console.error(error);
     } finally {
       setLoading(false);
@@ -35,71 +44,83 @@ export default function NewTodoModal({ lookup, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-800">Create New Todo</h2>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-rose-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
+    <div
+      className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl shadow-indigo-500/10 ring-1 ring-slate-200/80"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="relative bg-linear-to-r from-indigo-600 via-violet-600 to-purple-600 px-6 py-5">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-40" />
+          <div className="relative flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-white">
+                {isEdit ? "Edit Todo" : "Create New Todo"}
+              </h2>
+              <p className="mt-0.5 text-sm text-indigo-100">
+                {isEdit
+                  ? "Update task details below"
+                  : "Fill in the details to add a new task"}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="rounded-lg p-1.5 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5 p-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Title *
-            </label>
+            <label className={labelClass}>Title *</label>
             <input
               required
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
-              placeholder="Task name..."
+              className={inputClass}
+              placeholder="What needs to be done?"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Description
-            </label>
+            <label className={labelClass}>Description</label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
-              placeholder="Task details..."
+              className={`${inputClass} resize-none`}
+              placeholder="Add more context..."
               rows="3"
-            ></textarea>
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Assignee
-              </label>
+              <label className={labelClass}>Assignee</label>
               <select
                 name="user_id"
                 value={formData.user_id}
                 onChange={handleChange}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
+                className={inputClass}
               >
                 <option value="">Unassigned</option>
                 {lookup.users.map((u) => (
@@ -110,29 +131,25 @@ export default function NewTodoModal({ lookup, onClose, onSuccess }) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Due Date
-              </label>
+              <label className={labelClass}>Due Date</label>
               <input
                 type="date"
                 name="due_date"
                 value={formData.due_date}
                 onChange={handleChange}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
+                className={inputClass}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Category
-              </label>
+              <label className={labelClass}>Category</label>
               <select
                 name="category_id"
                 value={formData.category_id}
                 onChange={handleChange}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
+                className={inputClass}
               >
                 <option value="">None</option>
                 {lookup.categories.map((c) => (
@@ -143,14 +160,12 @@ export default function NewTodoModal({ lookup, onClose, onSuccess }) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Status
-              </label>
+              <label className={labelClass}>Status</label>
               <select
                 name="status_id"
                 value={formData.status_id}
                 onChange={handleChange}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
+                className={inputClass}
               >
                 {lookup.statuses.map((s) => (
                   <option key={s.status_id} value={s.status_id}>
@@ -160,14 +175,12 @@ export default function NewTodoModal({ lookup, onClose, onSuccess }) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Priority
-              </label>
+              <label className={labelClass}>Priority</label>
               <select
                 name="priority_id"
                 value={formData.priority_id}
                 onChange={handleChange}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
+                className={inputClass}
               >
                 {lookup.priorities.map((p) => (
                   <option key={p.priority_id} value={p.priority_id}>
@@ -178,20 +191,20 @@ export default function NewTodoModal({ lookup, onClose, onSuccess }) {
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-lg bg-linear-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:from-indigo-700 hover:to-violet-700 hover:shadow-xl disabled:opacity-50 disabled:hover:shadow-lg"
             >
-              {loading ? "Saving..." : "Create Task"}
+              {loading ? "Saving..." : isEdit ? "Save Changes" : "Create Task"}
             </button>
           </div>
         </form>
