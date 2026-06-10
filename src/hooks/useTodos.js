@@ -25,6 +25,22 @@ const findWord = (dict, searchKey, id) => {
   return dict[id][searchKey];
 };
 
+const parseTagsInput = (tags) => {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags.filter(Boolean);
+  return tags
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+};
+
+const normalizeTags = (tags) => {
+  if (!tags?.length) return [];
+  return tags.map((t, i) =>
+    typeof t === "string" ? { tag_id: i + 1, name: t } : t,
+  );
+};
+
 export function useTodos() {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,10 +53,13 @@ export function useTodos() {
       const rawData = response.data.data || response.data;
       const adaptedTodos = rawData.map((todo) => ({
         ...todo,
-        title: todo.title || "Untitled Task", // <--- ADD THIS SAFETY NET
+        title: todo.title || "Untitled Task",
         description: todo.description || "",
         todo_id: todo._id,
-        due_date: todo.dueDate || "",
+        due_date: todo.dueDate || todo.due_date || "",
+        assignee: todo.assignee || "",
+        category: todo.category || "",
+        tags: normalizeTags(todo.tags),
         user_id: findId(usersById, "name", todo.assignee),
         category_id: findId(categoriesById, "name", todo.category),
         status_id: findId(statusesById, "status", todo.status),
@@ -60,9 +79,9 @@ export function useTodos() {
         title: todoData.title,
         description: todoData.description,
         dueDate: todoData.due_date,
-        assignee: findWord(usersById, "name", todoData.user_id) || "Unassigned",
-        category:
-          findWord(categoriesById, "name", todoData.category_id) || "None",
+        assignee: todoData.assignee?.trim() || "Unassigned",
+        category: todoData.category?.trim() || "None",
+        tags: parseTagsInput(todoData.tags),
         status:
           findWord(statusesById, "status", todoData.status_id) || "Pending",
         priority:
@@ -81,8 +100,9 @@ export function useTodos() {
         title: updatedData.title,
         description: updatedData.description,
         dueDate: updatedData.due_date,
-        assignee: findWord(usersById, "name", updatedData.user_id),
-        category: findWord(categoriesById, "name", updatedData.category_id),
+        assignee: updatedData.assignee?.trim() || "Unassigned",
+        category: updatedData.category?.trim() || "None",
+        tags: parseTagsInput(updatedData.tags),
         status: findWord(statusesById, "status", updatedData.status_id),
         priority: findWord(prioritiesById, "level", updatedData.priority_id),
       };

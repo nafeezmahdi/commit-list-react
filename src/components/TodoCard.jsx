@@ -12,12 +12,13 @@ export default function TodoCard({
   onEdit,
   onDelete,
 }) {
-  const user = usersById[todo.user_id];
-  const category = categoriesById[todo.category_id];
   const status = statusesById[todo.status_id]?.status || "Pending";
   const priority = prioritiesById[todo.priority_id]?.level || "Medium";
-  const related = getTodoRelated(todo.todo_id);
-  const completeSubtasks = related.subtasks.filter(
+  const related = getTodoRelated(todo.todo_id) || {};
+  const assignee = todo.assignee || usersById[todo.user_id]?.name;
+  const categoryName = todo.category || categoriesById[todo.category_id]?.name;
+  const tags = todo.tags?.length ? todo.tags : related.tags || [];
+  const completeSubtasks = (related.subtasks || []).filter(
     (s) => s.is_completed,
   ).length;
 
@@ -116,9 +117,9 @@ export default function TodoCard({
       <div className="mt-3 grid gap-2 text-sm text-slate-600 sm:grid-cols-2 lg:grid-cols-3">
         <p>
           <span className="font-medium text-slate-800">Assignee:</span>{" "}
-          {user ? (
+          {assignee ? (
             <span className="ml-1 rounded bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-700">
-              {user.name}
+              {assignee}
             </span>
           ) : (
             "-"
@@ -126,9 +127,9 @@ export default function TodoCard({
         </p>
         <p>
           <span className="font-medium text-slate-800">Category:</span>{" "}
-          {category ? (
+          {categoryName ? (
             <span className="ml-1 rounded bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700">
-              {category.name}
+              {categoryName}
             </span>
           ) : (
             "-"
@@ -155,13 +156,13 @@ export default function TodoCard({
       <div className="mt-3 space-y-2 text-sm">
         <p>
           <span className="font-medium text-slate-800">Tags:</span>{" "}
-          {related.tags.length ? (
-            related.tags.map((t) => (
+          {tags.length ? (
+            tags.map((t, i) => (
               <span
-                key={t.tag_id}
+                key={t.tag_id ?? i}
                 className="ml-1 rounded bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-700"
               >
-                {t.name}
+                {typeof t === "string" ? t : t.name}
               </span>
             ))
           ) : (

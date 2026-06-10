@@ -14,11 +14,20 @@ export default function NewTodoModal({
 }) {
   const isEdit = Boolean(todo);
   const [loading, setLoading] = useState(false);
+  const formatTagsForInput = (tags) => {
+    if (!tags?.length) return "";
+    return tags
+      .map((t) => (typeof t === "string" ? t : t.name))
+      .filter(Boolean)
+      .join(", ");
+  };
+
   const [formData, setFormData] = useState({
     title: todo?.title || "",
     description: todo?.description || "",
-    user_id: todo?.user_id || "",
-    category_id: todo?.category_id || "",
+    assignee: todo?.assignee || "",
+    category: todo?.category || "",
+    tags: formatTagsForInput(todo?.tags),
     status_id: todo?.status_id || "1",
     priority_id: todo?.priority_id || "2",
     due_date: todo?.due_date ? todo.due_date.substring(0, 10) : "",
@@ -116,19 +125,14 @@ export default function NewTodoModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Assignee</label>
-              <select
-                name="user_id"
-                value={formData.user_id}
+              <input
+                type="text"
+                name="assignee"
+                value={formData.assignee}
                 onChange={handleChange}
                 className={inputClass}
-              >
-                <option value="">Unassigned</option>
-                {lookup.users.map((u) => (
-                  <option key={u.user_id} value={u.user_id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="Who is responsible?"
+              />
             </div>
             <div>
               <label className={labelClass}>Due Date</label>
@@ -145,19 +149,14 @@ export default function NewTodoModal({
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className={labelClass}>Category</label>
-              <select
-                name="category_id"
-                value={formData.category_id}
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
                 onChange={handleChange}
                 className={inputClass}
-              >
-                <option value="">None</option>
-                {lookup.categories.map((c) => (
-                  <option key={c.category_id} value={c.category_id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="e.g. Work, Personal"
+              />
             </div>
             <div>
               <label className={labelClass}>Status</label>
@@ -189,6 +188,21 @@ export default function NewTodoModal({
                 ))}
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Tags</label>
+            <input
+              type="text"
+              name="tags"
+              value={formData.tags}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="e.g. Urgent, Home, Exam (comma-separated)"
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              Add one or more tags separated by commas
+            </p>
           </div>
 
           <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
